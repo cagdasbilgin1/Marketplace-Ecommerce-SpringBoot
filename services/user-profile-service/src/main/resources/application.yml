@@ -1,0 +1,31 @@
+server:
+  port: ${PORT:8081}
+
+spring:
+  application:
+    name: user-profile-service
+  datasource:
+    url: ${USER_PROFILE_DB_URL:jdbc:postgresql://localhost:5432/user_profile_db}
+    username: ${USER_PROFILE_DB_USERNAME:user_profile_user}
+    password: ${USER_PROFILE_DB_PASSWORD:user_profile_pass}
+  flyway:
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/marketplace}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

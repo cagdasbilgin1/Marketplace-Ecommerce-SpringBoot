@@ -1,0 +1,35 @@
+server:
+  port: ${PORT:8084}
+
+spring:
+  application:
+    name: cart-service
+  datasource:
+    url: ${CART_DB_URL:jdbc:postgresql://localhost:5432/cart_db}
+    username: ${CART_DB_USERNAME:cart_user}
+    password: ${CART_DB_PASSWORD:cart_pass}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  flyway:
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/marketplace}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

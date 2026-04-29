@@ -1,0 +1,95 @@
+{
+  "realm": "marketplace",
+  "enabled": true,
+  "displayName": "Marketplace",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "CUSTOMER",
+        "description": "Default buyer role"
+      },
+      {
+        "name": "SELLER",
+        "description": "Marketplace seller role"
+      },
+      {
+        "name": "ADMIN",
+        "description": "Marketplace administration role"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "marketplace-web",
+      "name": "Marketplace Web",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://localhost:5173/*",
+        "http://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5173",
+        "http://localhost:3000"
+      ]
+    },
+    {
+      "clientId": "marketplace-cli",
+      "name": "Marketplace Local CLI",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true
+    },
+    {
+      "clientId": "marketplace-service",
+      "name": "Marketplace Service Account",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "seller",
+      "enabled": true,
+      "email": "seller@example.com",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "seller",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "SELLER"
+      ]
+    },
+    {
+      "username": "customer",
+      "enabled": true,
+      "email": "customer@example.com",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "customer",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "CUSTOMER"
+      ]
+    }
+  ]
+}
