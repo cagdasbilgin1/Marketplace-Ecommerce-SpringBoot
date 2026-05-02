@@ -18,7 +18,7 @@ CREATE TABLE products (
     slug VARCHAR(240) NOT NULL UNIQUE,
     description TEXT NOT NULL,
     price NUMERIC(12, 2) NOT NULL CHECK (price >= 0),
-    currency CHAR(3) NOT NULL DEFAULT 'TRY',
+    currency VARCHAR(3) NOT NULL DEFAULT 'TRY',
     status VARCHAR(32) NOT NULL DEFAULT 'DRAFT',
     metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),

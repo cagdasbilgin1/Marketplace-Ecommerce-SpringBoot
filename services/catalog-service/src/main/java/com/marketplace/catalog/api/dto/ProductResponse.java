@@ -12,6 +12,7 @@ import com.marketplace.catalog.domain.ProductStatus;
 
 public record ProductResponse(
         UUID id,
+        String productId,
         UUID sellerId,
         CategoryResponse category,
         String name,
@@ -33,6 +34,7 @@ public record ProductResponse(
 
         return new ProductResponse(
                 product.getId(),
+                product.getProductId(),
                 product.getSellerId(),
                 CategoryResponse.from(product.getCategory()),
                 product.getName(),

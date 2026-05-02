@@ -52,6 +52,11 @@ class ProductController {
         return productService.getBySlug(slug);
     }
 
+    @GetMapping("/by-product-id/{productId}")
+    ProductResponse getByProductId(@PathVariable String productId) {
+        return productService.getByProductId(productId);
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
     ResponseEntity<ProductResponse> create(@Valid @RequestBody ProductRequest request) {

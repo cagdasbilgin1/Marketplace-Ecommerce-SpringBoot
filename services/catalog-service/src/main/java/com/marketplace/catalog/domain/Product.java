@@ -35,6 +35,9 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "product_id", nullable = false, unique = true, length = 9)
+    private String productId;
+
     @Column(name = "seller_id", nullable = false)
     private UUID sellerId;
 
@@ -119,6 +122,10 @@ public class Product {
 
     public UUID getId() {
         return id;
+    }
+
+    public String getProductId() {
+        return productId;
     }
 
     public UUID getSellerId() {

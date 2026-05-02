@@ -59,6 +59,36 @@ http://localhost:8080/api/catalog/internal/service-info
 
 Bu endpoint token ister; sadece `/actuator/health` ve `/actuator/info` public bırakıldı.
 
+## Frontend
+
+Frontend `frontend/` altında React + TypeScript + Vite ile başlatıldı. Routing için React Router, HTTP için merkezi Axios client ve server state için TanStack Query kullanılır.
+
+Örnek kurulum:
+
+```bash
+cd frontend
+cp .env.example .env
+npm install
+npm run dev
+```
+
+- Vite dev server: http://localhost:5173
+- API base URL varsayılan olarak `/api` ve Vite proxy ile `http://localhost:8080` gateway'ine yönlenir.
+- Tema ana rengi: `rgb(255, 68, 239)`
+
+### Authentication
+
+- Keycloak realm: `marketplace`
+- Frontend login/signup akisi uygulama icindeki ozel auth arayuzu ile calisir.
+- Gateway altinda `/api/auth/*` endpointleri Keycloak token ve kullanici olusturma islerini arka planda yonetir.
+- Access token isteklerde `Authorization: Bearer` olarak gonderilir.
+- Refresh token frontend tarafinda otomatik yenilenir.
+
+Ornek local hesaplar:
+
+- `seller` / `seller`
+- `customer` / `customer`
+
 ## Dokümanlar
 
 - [Architecture](docs/architecture.md)
@@ -111,3 +141,25 @@ curl -X POST http://localhost:8080/api/catalog/products \
     "images":[{"url":"https://cdn.example.com/product.jpg","altText":"Urun gorseli","sortOrder":0}]
   }'
 ```
+
+## Hazir Seed Import
+
+Farkli kategorilerden ornek urunleri tek komutla eklemek icin:
+
+```bash
+AUTH_USERNAME=seller AUTH_PASSWORD=seller bash scripts/import-catalog-seed.sh
+```
+
+Alternatif olarak elinde yetkili token varsa:
+
+```bash
+AUTH_TOKEN=... bash scripts/import-catalog-seed.sh
+```
+
+Hazir dataset dosyasi:
+
+- [`seed/catalog-seed.json`](/Users/cagdasbilgin/Projects/marketplace-ecommerce/seed/catalog-seed.json)
+
+Import scripti:
+
+- [`scripts/import-catalog-seed.sh`](/Users/cagdasbilgin/Projects/marketplace-ecommerce/scripts/import-catalog-seed.sh)

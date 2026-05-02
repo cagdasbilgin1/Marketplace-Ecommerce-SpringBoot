@@ -2,12 +2,13 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
+import { CategorySidebar } from "../components/CategorySidebar";
 import { EmptyState } from "../components/EmptyState";
 import { ProductCard } from "../components/ProductCard";
 import { ErrorState, LoadingState } from "../components/QueryState";
 import { TopCategoryStrip } from "../components/TopCategoryStrip";
 import { getCategories, getProducts } from "../shared/api/catalog";
-import { findSubcategoryBySlug } from "../shared/catalogNavigation";
+import { findSubcategoryBySlug, heroCategoryNav } from "../shared/catalogNavigation";
 
 type SortOption = "smart" | "price-asc" | "price-desc" | "newest" | "name-asc";
 
@@ -24,9 +25,140 @@ const listingConfigs: Record<string, ListingFilterConfig> = {
       "Cocuk Ayakkabi",
       "Erkek Canta",
       "Bavul & Valiz",
-      "Ayakkabi Bakim",
+      "Ayakkabi Bakim Urunleri",
+      "Cocuk Canta"
     ],
   },
+  "kadin-canta": {
+    subcategoryChips: [
+      "Kadin Omuz Cantasi",
+      "Kadin Cuzdan & Kartlik",
+      "Kadin Sirt Cantasi",
+      "Kadin El Cantasi",
+      "Kadin Postaci Cantasi",
+      "Bez & Alisveris Cantasi",
+      "Kadin Bel Cantasi",
+      "Kadin Canta Aksesuarlari",
+      "Kadin Portfoy & Clutch Canta",
+      "Kadin Abiye Canta",
+      "Kadin Plaj Cantasi",
+      "Kadin Evrak Cantasi",
+    ],
+  },
+  "erkek-ayakkabi": {
+    subcategoryChips: [
+      "Erkek Gunluk Ayakkabi",
+      "Erkek Terlik & Sandalet",
+      "Erkek Bot & Cizme",
+      "Erkek Ev Terligi & Panduf"
+    ]
+  },
+  "kadin-ayakkabi": {
+    subcategoryChips: [
+      "Kadin Gunluk Ayakkabi",
+      "Topuklu Ayakkabi",
+      "Terlik & Sandalet",
+      "Kadin Bot & Cizme",
+      "Ev Terligi & Panduf"
+    ]
+  },
+  "cocuk-ayakkabi": {
+    subcategoryChips: [
+      "Erkek Cocuk Ayakkabi",
+      "Kiz Cocuk Ayakakabi"
+    ]
+  },
+  "erkek-canta": {
+    subcategoryChips: [
+      "Erkek Cuzdan & Kartlik",
+      "Erkek Sirt Cantasi",
+      "Erkek El Cantasi & Portfoy",
+      "Erkek Postaci Cantasi",
+      "Erkek Bel Cantasi",
+      "Erkek Evrak Cantasi",
+      "Erkek Canta Aksesuarlari"
+    ]
+  },
+  "bavul-valiz": {
+    subcategoryChips: [
+      "Valiz Seti",
+      "Kabin Boy Valiz",
+      "Seyahat Cantalari",
+      "Orta Boy Valiz",
+      "Valiz Kilifi & Aksesuar",
+      "Buyuk Boy Valiz",
+      "Cocuk Valizleri",
+      "Seyahat Kozmetik Cantalari"
+    ]
+  },
+  "ayakkabi-bakim-urunleri": {
+    subcategoryChips: [
+      "Ayakkabi Boyasi & Spreyi",
+      "Ayakkabi & Terlik Aksesuar",
+      "Ayakkabi Tamir Malzemeleri",
+      "Ayakkabi Bagcigi",
+      "Ayakkabi Kalibi",
+      "Ayakkabi Cekecegi"
+    ]
+  },
+  "cocuk-canta": {
+    subcategoryChips: [
+      "Kiz Cocuk Cantasi",
+      "Erkek Cocuk Cantasi"
+    ]
+  },
+  "kadin-giyim-ve-aksesuar": {
+    subcategoryChips: [
+      "Elbise",
+      "Bluz",
+      "Kadin Tisort",
+      "Kadin Gomlek",
+      "Kadin Pantolon",
+      "Kadin Kazak",
+      "Ic Giyim",
+      "Kadin Alt-Ust Takim",
+      "Abiye Elbise",
+      "Kadin Jean",
+      "Kadin Sort",
+      "Kadin Hirka",
+      "Tesettur Giyim",
+      "Dis Giyim",
+      "Kadin Aksesuar",
+      "Kadin Body",
+      "Crop Top",
+      "Tayt",
+      "Kadin Esofman & Sweatshirt",
+      "Buyuk Beden",
+      "Etek",
+      "Kadin Plaj Giyim",
+      "Kadin Tulum",
+      "Kadin Suveter",
+      "Gelinlik"
+    ]
+  },
+  "erkek-giyim-ve-aksesuar": {
+    subcategoryChips: [
+      "Erkek Tisort & Polo Yaka Tisort",
+      "Gomlek",
+      "Dis Giyim",
+      "Ic Giyim",
+      "Erkek Aksesuar",
+      "Pantolon & Sort",
+      "Esofman & Sweatshirt",
+      "Takim Elbise",
+      "Kazak & Hirka",
+      "Erkek Mayo & Deniz Sortu",
+      "Erkek Buyuk Beden",
+      "Smokin & Damatlik"
+    ]
+  },
+  "cocuk-giyim-ve-aksesuar": {
+    subcategoryChips: [
+      "Kiz Cocuk",
+      "Erkek Cocuk",
+      "Aksesuar"
+    ]
+  }
 };
 
 function SortIcon() {
@@ -41,7 +173,7 @@ function SortIcon() {
 }
 
 export function CategoryPage() {
-  const { slug } = useParams();
+  const { slug, subSlug, subSubSlug } = useParams();
   const [sortOption, setSortOption] = useState<SortOption>("smart");
   const [selectedChip, setSelectedChip] = useState<string | null>(null);
 
@@ -70,7 +202,32 @@ export function CategoryPage() {
     ? `${subcategoryMatch.child.label} icin sonuclari listeledik.`
     : "Bu kategoriye ait urunler katalog servisinden canli olarak listelenir.";
   const activeCategoryName = subcategoryMatch ? subcategoryMatch.category.labelLines.join(" ") : category?.name ?? null;
-  const listingConfig = listingConfigs[(subcategoryMatch ? slug : undefined) ?? ""] ?? { subcategoryChips: [] };
+  const currentLevelSlug = subSubSlug || subSlug || slug;
+  const listingConfig = listingConfigs[currentLevelSlug ?? ""] ?? { subcategoryChips: [] };
+
+  const subSlugMatch = subSlug 
+    ? (listingConfigs[slug ?? ""]?.subcategoryChips ?? []).find(chip => chip.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-") === subSlug) 
+    : null;
+
+  const subSubSlugMatch = subSubSlug
+    ? (listingConfigs[subSlug ?? ""]?.subcategoryChips ?? []).find(chip => chip.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-") === subSubSlug)
+    : null;
+
+  const topCategoryMatch = heroCategoryNav.find(c => c.to.replace(/^\//, "") === resolvedCategorySlug);
+
+  const sidebarSubcategories = (!subcategoryMatch && !subSlug && topCategoryMatch)
+    ? topCategoryMatch.children.map(child => ({
+        name: child.label,
+        slug: child.slug
+      }))
+    : listingConfig.subcategoryChips.map(chip => ({
+        name: chip,
+        slug: chip.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-")
+      }));
+
+  const sidebarBaseUrl = (!subcategoryMatch && !subSlug && topCategoryMatch)
+    ? ""
+    : (subSubSlug ? `${slug}/${subSlug}/${subSubSlug}` : (subSlug ? `${slug}/${subSlug}` : slug));
 
   const filteredProducts = useMemo(() => {
     let nextProducts = [...products];
@@ -108,77 +265,78 @@ export function CategoryPage() {
       <TopCategoryStrip activeCategoryName={activeCategoryName} />
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <nav className="flex flex-wrap items-center gap-2 text-[1.02rem] text-slate-500">
-          <Link to="/" className="transition hover:text-slate-900">
-            Ana Sayfa
-          </Link>
-          <span>›</span>
-          <Link to={subcategoryMatch?.category.to ?? `/${resolvedCategorySlug}`} className="transition hover:text-slate-900">
-            {subcategoryMatch ? subcategoryMatch.category.labelLines.join(" ") : category?.name}
-          </Link>
-          {subcategoryMatch && (
-            <>
-              <span>›</span>
-              <span className="font-medium text-slate-900">{subcategoryMatch.child.label}</span>
-            </>
-          )}
-        </nav>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <nav className="flex flex-wrap items-center gap-2 text-[1.02rem] text-slate-500">
+            <Link to="/" className="transition hover:text-slate-900">
+              Ana Sayfa
+            </Link>
+            <span>›</span>
+            <Link to={subcategoryMatch?.category.to ?? `/${resolvedCategorySlug}`} className="transition hover:text-slate-900">
+              {subcategoryMatch ? subcategoryMatch.category.labelLines.join(" ") : category?.name}
+            </Link>
+            {subcategoryMatch && (
+              <>
+                <span>›</span>
+                {subSlugMatch ? (
+                  <Link to={`/${slug}`} className="transition hover:text-slate-900">
+                    {subcategoryMatch.child.label}
+                  </Link>
+                ) : (
+                  <span className="font-medium text-slate-900">{subcategoryMatch.child.label}</span>
+                )}
+              </>
+            )}
+            {subSlugMatch && (
+              <>
+                <span>›</span>
+                {subSubSlugMatch ? (
+                  <Link to={`/${slug}/${subSlug}`} className="transition hover:text-slate-900">
+                    {subSlugMatch}
+                  </Link>
+                ) : (
+                  <span className="font-medium text-slate-900">{subSlugMatch}</span>
+                )}
+              </>
+            )}
+            {subSubSlugMatch && (
+              <>
+                <span>›</span>
+                <span className="font-medium text-slate-900">{subSubSlugMatch}</span>
+              </>
+            )}
+          </nav>
+
+          <div className="w-full lg:w-[16rem]">
+            <label className="flex h-11 items-center gap-2.5 border border-slate-200 bg-white px-4 shadow-[0_4px_12px_rgba(15,23,42,0.03)] rounded-xl transition hover:border-brand-300 focus-within:border-brand-500 focus-within:ring-1 focus-within:ring-brand-500 cursor-pointer">
+              <span className="text-slate-400">
+                <SortIcon />
+              </span>
+              <select
+                value={sortOption}
+                onChange={(event) => setSortOption(event.target.value as SortOption)}
+                className="w-full bg-transparent text-[0.95rem] font-bold text-slate-800 outline-none cursor-pointer"
+              >
+                <option value="smart">Akıllı Sıralama</option>
+                <option value="newest">En Yeniler</option>
+                <option value="price-asc">Fiyat Artan</option>
+                <option value="price-desc">Fiyat Azalan</option>
+                <option value="name-asc">Ada Göre</option>
+              </select>
+            </label>
+          </div>
+        </div>
 
         <div className="mt-5 grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sol Kolon */}
-          <div className="bg-blue-500 rounded-2xl p-4 min-h-[500px]">
-            {/* Buraya sonradan filtreleme (sidebar) alanlari eklenebilir */}
+          {/* Sol Kolon: Filtreler (Sidebar) */}
+          <div className="lg:col-span-1">
+            <CategorySidebar currentSlug={sidebarBaseUrl} subcategories={sidebarSubcategories} />
           </div>
 
-          {/* Sag Kolon */}
-          <div className="bg-red-500 rounded-2xl p-4 lg:col-span-3">
+          {/* Sag Kolon: Urunler */}
+          <div className="lg:col-span-3">
             <section className="min-w-0">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <p className="text-[2.05rem] font-medium tracking-tight text-white">
-                    <span className="font-extrabold">{pageTitle}</span> icin sonuclari listeledik.
-                  </p>
 
-                  <div className="w-full lg:max-w-[18rem]">
-                    <label className="flex h-14 items-center gap-3 border border-slate-200 bg-white px-5 shadow-[0_8px_24px_rgba(15,23,42,0.03)] rounded-xl">
-                      <span className="text-slate-500">
-                        <SortIcon />
-                      </span>
-                      <select
-                        value={sortOption}
-                        onChange={(event) => setSortOption(event.target.value as SortOption)}
-                        className="w-full bg-transparent text-[1.02rem] font-bold text-slate-900 outline-none"
-                      >
-                        <option value="smart">Akilli Siralama</option>
-                        <option value="newest">En Yeniler</option>
-                        <option value="price-asc">Fiyat Artan</option>
-                        <option value="price-desc">Fiyat Azalan</option>
-                        <option value="name-asc">Ada Gore</option>
-                      </select>
-                    </label>
-                  </div>
-                </div>
-
-                {listingConfig.subcategoryChips.length > 0 && (
-                  <div className="flex flex-wrap gap-3">
-                    {listingConfig.subcategoryChips.map((chip) => {
-                      const isActive = selectedChip === chip;
-
-                      return (
-                        <button
-                          key={chip}
-                          type="button"
-                          onClick={() => setSelectedChip(isActive ? null : chip)}
-                          className={`rounded-full border px-7 py-3 text-[1.02rem] font-medium transition ${
-                            isActive ? "border-brand-500 bg-brand-50 text-brand-700" : "border-transparent bg-white text-slate-700 hover:border-brand-300"
-                          }`}
-                        >
-                          {chip}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
 
                 {categoriesQuery.isLoading && <LoadingState label="Kategori bilgisi getiriliyor..." />}
                 {categoriesQuery.isError && <ErrorState label="Kategori bilgisi su anda getirilemedi." />}

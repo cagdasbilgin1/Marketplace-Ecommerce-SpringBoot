@@ -96,6 +96,13 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    public ProductResponse getByProductId(String productId) {
+        return productRepository.findByProductId(productId)
+                .map(ProductResponse::from)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
+    }
+
+    @Transactional(readOnly = true)
     public PageResponse<ProductResponse> list(ProductStatus status, String categorySlug, int page, int size) {
         Pageable pageable = PageRequest.of(
                 Math.max(page, 0),

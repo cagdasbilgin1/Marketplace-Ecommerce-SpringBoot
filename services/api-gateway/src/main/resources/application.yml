@@ -68,3 +68,14 @@ management:
     health:
       probes:
         enabled: true
+
+marketplace:
+  auth:
+    keycloak-url: ${KEYCLOAK_BASE_URL:http://localhost:9090}
+    realm: ${KEYCLOAK_REALM:marketplace}
+    public-client-id: ${KEYCLOAK_PUBLIC_CLIENT_ID:marketplace-cli}
+    admin-realm: ${KEYCLOAK_ADMIN_REALM:master}
+    admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
+    admin-username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+    admin-password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+    customer-role: ${KEYCLOAK_CUSTOMER_ROLE:CUSTOMER}

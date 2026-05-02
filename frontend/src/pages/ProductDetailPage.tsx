@@ -9,10 +9,12 @@ import { formatPrice } from "../shared/utils/format";
 import { buildProductPath, extractProductId } from "../shared/utils/productUrl";
 
 export function ProductDetailPage() {
-  const { slug, productKey } = useParams();
+  const { slug, productKey, subSlug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const productId = extractProductId(productKey);
+  
+  const actualProductKey = productKey || subSlug;
+  const productId = extractProductId(actualProductKey);
 
   const productQuery = useQuery({
     queryKey: ["product", productId ?? slug],
